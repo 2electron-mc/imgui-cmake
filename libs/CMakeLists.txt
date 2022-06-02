@@ -13,7 +13,7 @@ endif()
 if(USE_PREBUILT_SDL_LIB)
 
     set(CMAKE_FIND_DEBUG_MODE TRUE)
-    set(PREBUILT_PATH ${PROJECT_SOURCE_DIR}/libs/prebuilt/libs/ CACHE PATH "Prebuilt" FORCE)
+    set(SDL_PREBUILT_PATH ${PROJECT_SOURCE_DIR}/libs/prebuilt/libs/ CACHE PATH "Prebuilt" FORCE)
 
     if(WIN32)
 
@@ -31,7 +31,7 @@ if(USE_PREBUILT_SDL_LIB)
         find_library(SDL_LIB
                 NAMES
                 SDL2d
-                PATHS ${PREBUILT_PATH}/${LIB_PATH}
+                PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
                 REQUIRED
                 )
 
@@ -42,7 +42,7 @@ if(USE_PREBUILT_SDL_LIB)
             set_target_properties(SDL2
                     PROPERTIES
                     IMPORTED_IMPLIB "${SDL_LIB}"
-                    IMPORTED_LOCATION "${PREBUILT_PATH}/${LIB_PATH}/SDL2d.dll"
+                    IMPORTED_LOCATION "${SDL_PREBUILT_PATH}/${LIB_PATH}/SDL2d.dll"
                     )
 
         endif ()
@@ -57,7 +57,7 @@ if(USE_PREBUILT_SDL_LIB)
         find_library(SDL2_MAIN_LIB
                 NAMES
                 SDL2maind
-                PATHS ${PREBUILT_PATH}/${LIB_PATH}
+                PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
                 REQUIRED
                 )
 
