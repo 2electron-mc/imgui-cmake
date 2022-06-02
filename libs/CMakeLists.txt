@@ -13,7 +13,7 @@ endif()
 if(USE_PREBUILT_SDL_LIB)
 
     set(CMAKE_FIND_DEBUG_MODE TRUE)
-    set(PREBUILT_PATH ${PROJECT_SOURCE_DIR}/libs/prebuilt/libs/)
+    set(PREBUILT_PATH ${PROJECT_SOURCE_DIR}/libs/prebuilt/libs/ CACHE PATH "Prebuilt" FORCE)
 
     if(WIN32)
 
@@ -67,7 +67,7 @@ if(USE_PREBUILT_SDL_LIB)
                 IMPORTED_IMPLIB "${SDL2_MAIN_LIB}"
                 )
 
-        if (NOT SDL2main)
+        if (NOT TARGET SDL2main)
             message(STATUS "SDL2main: library not found..")
             return()
         else ()
