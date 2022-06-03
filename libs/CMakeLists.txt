@@ -16,17 +16,28 @@ if(USE_PREBUILT_SDL_LIB)
     set(SDL_PREBUILT_PATH ${PROJECT_SOURCE_DIR}/libs/prebuilt/libs/ CACHE PATH "Prebuilt" FORCE)
 
     if(WIN32)
+        set(SDL_OS_FOLDER "win32")
+    endif()
 
-        if(ARCH STREQUAL "x64")
-            set(LIB_PATH "win32/x64")
-        elseif(ARCH STREQUAL "x86")
-            set(LIB_PATH "win32/x86")
-        else()
-            MESSAGE(STATUS "Invalid architecture parameters found... ${ARCH}")
-            return()
-        endif()
+    if(UNIX)
+        set(SDL_OS_FOLDER "linux")
+    endif()
+
+    if(ARCH STREQUAL "x64")
+        set(LIB_PATH "${SDL_OS_FOLDER}/x64")
+    elseif(ARCH STREQUAL "x86")
+        set(LIB_PATH "${SDL_OS_FOLDER}/x86")
+    elseif(ARCH STREQUAL "armhf")
+        set(LIB_PATH "${SDL_OS_FOLDER}/armhf")
+    elseif(ARCH STREQUAL "arm64")
+        set(LIB_PATH "${SDL_OS_FOLDER}/arm64")
+    else()
+        MESSAGE(STATUS "Invalid architecture parameters found... ${ARCH}")
+        return()
+    endif()
 
 
+    if(WIN32)
 
         find_library(SDL_LIB
                 NAMES
@@ -72,6 +83,56 @@ if(USE_PREBUILT_SDL_LIB)
             return()
         else ()
             message(STATUS "SDL2main: library for WIN32 ${ARCH} found...")
+        endif ()
+
+    endif()
+
+    if(UNIX)
+
+        find_library(SDL_LIB
+                NAMES
+                libSDL2-2.0
+                PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+                REQUIRED
+                )
+
+        if (SDL_LIB)
+
+            message(STATUS "SDL LIBRARY FOUND: ${SDL_LIB}")
+            add_library(SDL2 SHARED IMPORTED GLOBAL)
+            set_target_properties(SDL2
+                    PROPERTIES
+                    IMPORTED_IMPLIB "${SDL_LIB}"
+                    IMPORTED_LOCATION "${SDL_LIB}"
+                    )
+
+        endif ()
+
+        if (NOT TARGET SDL2)
+            message(STATUS "SDL2: library not found..")
+            return()
+        else ()
+            message(STATUS "SDL2: library for UNIX ${ARCH} found...")
+        endif ()
+
+        find_library(SDL2_MAIN_LIB
+                NAMES
+                libSDL2main
+                PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+                REQUIRED
+                )
+
+        add_library(SDL2main SHARED IMPORTED GLOBAL)
+        set_target_properties(SDL2main
+                PROPERTIES
+                IMPORTED_IMPLIB "${SDL2_MAIN_LIB}"
+                )
+
+        if (NOT TARGET SDL2main)
+            message(STATUS "SDL2main: library not found..")
+            return()
+        else ()
+            message(STATUS "SDL2main: library for UNIX ${ARCH} found...")
         endif ()
 
     endif()
