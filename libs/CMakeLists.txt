@@ -14,6 +14,7 @@ if(USE_PREBUILT_SDL_LIB)
 
     set(CMAKE_FIND_DEBUG_MODE TRUE)
     set(SDL_PREBUILT_PATH ${PROJECT_SOURCE_DIR}/libs/prebuilt/libs/ CACHE PATH "Prebuilt" FORCE)
+    message(STATUS "Sdl prebuilt lib path: ${SDL_PREBUILT_PATH}")
 
     if(WIN32)
         set(SDL_OS_FOLDER "win32")
@@ -58,6 +59,7 @@ if(USE_PREBUILT_SDL_LIB)
 
         endif ()
 
+
         if (NOT TARGET SDL2)
             message(STATUS "SDL2: library not found..")
             return()
@@ -88,14 +90,50 @@ if(USE_PREBUILT_SDL_LIB)
     endif()
 
     if(UNIX)
-
-        find_library(SDL_LIB
+	
+	if(DEFINED CMAKE_TOOLCHAIN_FILE)
+		find_library(SDL_LIB
+		NAMES
+		libSDL2-2.0
+		libSDL2
+		SDL2
+		PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+		REQUIRED
+		NO_CMAKE_FIND_ROOT_PATH
+		)
+		
+		find_library(SDL2_MAIN_LIB
                 NAMES
-                libSDL2-2.0
+                libSDL2main
+                SDL2main
+                PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+                REQUIRED
+                NO_CMAKE_FIND_ROOT_PATH
+                )
+	 	
+	else()
+	
+		find_library(SDL_LIB
+		NAMES
+		libSDL2-2.0
+		libSDL2
+		SDL2
+		PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+		REQUIRED
+		)
+		
+		find_library(SDL2_MAIN_LIB
+                NAMES
+                libSDL2main
+                SDL2main
                 PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
                 REQUIRED
                 )
-
+	
+	endif()
+	    
+	message(STATUS "SDL PATH: ${SDL_PREBUILT_PATH}/${LIB_PATH}")
+        
         if (SDL_LIB)
 
             message(STATUS "SDL LIBRARY FOUND: ${SDL_LIB}")
@@ -107,6 +145,15 @@ if(USE_PREBUILT_SDL_LIB)
                     )
 
         endif ()
+        
+        if(SDL2_MAIN_LIB)
+	add_library(SDL2main SHARED IMPORTED GLOBAL)
+        set_target_properties(SDL2main
+                PROPERTIES
+                IMPORTED_IMPLIB "${SDL2_MAIN_LIB}"
+                IMPORTED_LOCATION "${SDL_LIB}"
+                )
+        endif()
 
         if (NOT TARGET SDL2)
             message(STATUS "SDL2: library not found..")
@@ -115,25 +162,15 @@ if(USE_PREBUILT_SDL_LIB)
             message(STATUS "SDL2: library for UNIX ${ARCH} found...")
         endif ()
 
-        find_library(SDL2_MAIN_LIB
-                NAMES
-                libSDL2main
-                PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
-                REQUIRED
-                )
-
-        add_library(SDL2main SHARED IMPORTED GLOBAL)
-        set_target_properties(SDL2main
-                PROPERTIES
-                IMPORTED_IMPLIB "${SDL2_MAIN_LIB}"
-                )
-
-        if (NOT TARGET SDL2main)
+	if (NOT TARGET SDL2main)
             message(STATUS "SDL2main: library not found..")
             return()
         else ()
             message(STATUS "SDL2main: library for UNIX ${ARCH} found...")
         endif ()
+	
+	message(STATUS "SDL2 found: ${SDL_LIB}")
+	message(STATUS "SDL2main found: ${SDL2_MAIN_LIB}")
 
     endif()
 
