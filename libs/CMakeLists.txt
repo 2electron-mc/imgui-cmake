@@ -1,5 +1,3 @@
-
-
 #=================== SDL2 ===================
 
 cmake_policy(SET CMP0077 NEW)
@@ -42,10 +40,11 @@ if(USE_PREBUILT_SDL_LIB)
         file(COPY $${SDL_PREBUILT_PATH}/${LIB_PATH} DESTINATION ${INSTALL_RPATH}/lib
                 FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_WRITE GROUP_READ WORLD_READ)
     endif()
+
     file(COPY ${SDL_PREBUILT_PATH}/${LIB_PATH} DESTINATION ${PROJECT_BINARY_DIR}/lib)
     if(PROJECT_BINARY_ROOT)
         message(STATUS "Project binary root set...")
-        file(COPY ${SDL2_DIR} DESTINATION ${PROJECT_BINARY_ROOT}/lib)
+        file(COPY ${SDL_PREBUILT_PATH}/${LIB_PATH} DESTINATION ${PROJECT_BINARY_ROOT}/lib)
     endif()
 
     if(WIN32)
