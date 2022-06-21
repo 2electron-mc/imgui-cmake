@@ -5,6 +5,7 @@
 cmake_policy(SET CMP0077 NEW)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
+OPTION(BUILD_EXAMPLES OFF "Build examples")
 
 if(RASPBIAN)
     set(VIDEO_RPI ON)
@@ -37,13 +38,21 @@ if(USE_PREBUILT_SDL_LIB)
         return()
     endif()
 
+    if(UNIX)
+        file(COPY $${SDL_PREBUILT_PATH}/${LIB_PATH} DESTINATION ${INSTALL_RPATH}/lib
+                FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_WRITE GROUP_READ WORLD_READ)
+    endif()
+    file(COPY ${SDL_PREBUILT_PATH}/${LIB_PATH} DESTINATION ${PROJECT_BINARY_DIR}/lib)
+    if(DEFINED PROJECT_BINARY_ROOT)
+        file(COPY ${SDL2_DIR} DESTINATION ${PROJECT_BINARY_ROOT}/lib)
+    endif()
 
     if(WIN32)
 
         find_library(SDL_LIB
                 NAMES
                 SDL2d
-                PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+                PATHS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARCH}
                 REQUIRED
                 )
 
@@ -54,7 +63,7 @@ if(USE_PREBUILT_SDL_LIB)
             set_target_properties(SDL2
                     PROPERTIES
                     IMPORTED_IMPLIB "${SDL_LIB}"
-                    IMPORTED_LOCATION "${SDL_PREBUILT_PATH}/${LIB_PATH}/SDL2d.dll"
+                    IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARCH}/SDL2d.dll"
                     )
 
         endif ()
@@ -70,7 +79,7 @@ if(USE_PREBUILT_SDL_LIB)
         find_library(SDL2_MAIN_LIB
                 NAMES
                 SDL2maind
-                PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+                PATHS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARCH}
                 REQUIRED
                 )
 
@@ -95,7 +104,7 @@ if(USE_PREBUILT_SDL_LIB)
 		find_library(SDL_LIB
 		NAMES
 		SDL2
-		PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+		PATHS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARCH}
 		REQUIRED
 		NO_CMAKE_FIND_ROOT_PATH
 		)
@@ -104,7 +113,7 @@ if(USE_PREBUILT_SDL_LIB)
                 NAMES
                 libSDL2main
                 SDL2main
-                PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+                PATHS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARCH}
                 REQUIRED
                 NO_CMAKE_FIND_ROOT_PATH
                 )
@@ -114,7 +123,7 @@ if(USE_PREBUILT_SDL_LIB)
 		find_library(SDL_LIB
 		NAMES
 		SDL2
-		PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+		PATHS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARCH}
 		REQUIRED
 		)
 		
@@ -122,7 +131,7 @@ if(USE_PREBUILT_SDL_LIB)
                 NAMES
                 libSDL2main
                 SDL2main
-                PATHS ${SDL_PREBUILT_PATH}/${LIB_PATH}
+                PATHS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ARCH}
                 REQUIRED
                 )
 	
