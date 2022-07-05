@@ -202,6 +202,7 @@ target_sources( IMGUI
 
                 PRIVATE
                     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+                    ${IMGUI_DIR}/backends/imgui_impl_opengl2.cpp
                     ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp
                 )
 
@@ -245,4 +246,9 @@ if(BUILD_EXAMPLES)
     target_sources(example_sdl_opengl3 PUBLIC ${IMGUI_DIR}/examples/example_sdl_opengl3/main.cpp)
     target_link_libraries(example_sdl_opengl3 IMGUI)
     set_target_properties(example_sdl_opengl3 PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+    add_executable(example_sdl_opengl2)
+    target_sources(example_sdl_opengl2 PUBLIC ${IMGUI_DIR}/examples/example_sdl_opengl2/main.cpp)
+    target_link_libraries(example_sdl_opengl2 IMGUI)
+    set_target_properties(example_sdl_opengl2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
